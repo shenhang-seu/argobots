@@ -161,6 +161,7 @@ typedef struct ABTI_rwlock ABTI_rwlock;
 typedef struct ABTI_eventual ABTI_eventual;
 typedef struct ABTI_future ABTI_future;
 typedef struct ABTI_barrier ABTI_barrier;
+typedef struct ABTI_sem ABTI_sem;
 typedef struct ABTI_xstream_barrier ABTI_xstream_barrier;
 typedef struct ABTI_timer ABTI_timer;
 #ifndef ABT_CONFIG_DISABLE_TOOL_INTERFACE
@@ -507,6 +508,12 @@ struct ABTI_future {
     size_t num_compartments;
     void **array;
     void (*p_callback)(void **arg);
+    ABTI_waitlist waitlist;
+};
+
+struct ABTI_sem {
+    ABTD_spinlock lock;
+	int wait_cnt;
     ABTI_waitlist waitlist;
 };
 

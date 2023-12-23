@@ -407,6 +407,9 @@ extern "C" {
  */
 #define ABT_ERR_CPUID              55
 
+#define ABT_ERR_INV_SEM            60
+#define ABT_ERR_SEM                61
+
 /**
  * @ingroup ES
  * @brief   State of an execution stream.
@@ -714,6 +717,7 @@ enum ABT_sync_event_type {
     ABT_SYNC_EVENT_TYPE_EVENTUAL,
     /** Events related to a future. */
     ABT_SYNC_EVENT_TYPE_FUTURE,
+	ABT_SYNC_EVENT_TYPE_SEM,
     /** Events related to a barrier. */
     ABT_SYNC_EVENT_TYPE_BARRIER,
 };
@@ -813,6 +817,7 @@ struct ABT_cond_opaque;
 struct ABT_rwlock_opaque;
 struct ABT_eventual_opaque;
 struct ABT_future_opaque;
+struct ABT_sem_opaque;
 struct ABT_barrier_opaque;
 struct ABT_timer_opaque;
 struct ABT_tool_context_opaque;
@@ -1026,6 +1031,9 @@ typedef struct ABT_future_opaque *          ABT_future;
  *
  * A NULL handle of this type is \c ABT_BARRIER_NULL.
  */
+ 
+ typedef void *                             ABT_sem;
+ 
 typedef struct ABT_barrier_opaque *         ABT_barrier;
 /**
  * @ingroup TIMER
@@ -1094,6 +1102,7 @@ typedef enum ABT_sync_event_type            ABT_sync_event_type;
 #define ABT_TIMER_NULL           ((ABT_timer)          NULL)
 #define ABT_TOOL_CONTEXT_NULL    ((ABT_tool_context)   NULL)
 #define ABT_POOL_USER_DEF_NULL   ((ABT_pool_user_def)  NULL)
+#define ABT_SEM_NULL             ((ABT_sem)            NULL)
 #else
 #define ABT_XSTREAM_NULL         ((ABT_xstream)        (0x01))
 #define ABT_XSTREAM_BARRIER_NULL ((ABT_xstream_barrier)(0x02))
@@ -1116,6 +1125,7 @@ typedef enum ABT_sync_event_type            ABT_sync_event_type;
 #define ABT_TIMER_NULL           ((ABT_timer)          (0x13))
 #define ABT_TOOL_CONTEXT_NULL    ((ABT_tool_context)   (0x14))
 #define ABT_POOL_USER_DEF_NULL   ((ABT_pool_user_def)  (0x15))
+#define ABT_SEM_NULL             ((ABT_sem)            (0x16))
 #endif
 
 /**
@@ -1328,6 +1338,10 @@ typedef struct {
  */
 #define ABT_EVENTUAL_MEMORY_GET_HANDLE(p_eventual_memory)                      \
     ((ABT_eventual)p_eventual_memory)
+
+typedef struct {
+	int dummy[16];
+} ABT_sem_memory;
 
 /**
  * @ingroup SCHED_CONFIG
@@ -2647,6 +2661,13 @@ int ABT_future_wait(ABT_future future) ABT_API_PUBLIC;
 int ABT_future_test(ABT_future future, ABT_bool *is_ready) ABT_API_PUBLIC;
 int ABT_future_set(ABT_future future, void *value) ABT_API_PUBLIC;
 int ABT_future_reset(ABT_future future) ABT_API_PUBLIC;
+
+int ABT_sem_create(ABT_sem *newsem) ABT_API_PUBLIC;
+void ABT_sem_free(ABT_sem *sem) ABT_API_PUBLIC;
+void ABT_sem_init(ABT_sem sem) ABT_API_PUBLIC;
+void ABT_sem_wait(ABT_sem sem) ABT_API_PUBLIC;
+void ABT_sem_post(ABT_sem sem) ABT_API_PUBLIC;
+int ABT_sem_get_wait_ult_cnt(ABT_sem sem) ABT_API_PUBLIC;
 
 /* Barrier */
 int ABT_barrier_create(uint32_t num_waiters, ABT_barrier *newbarrier) ABT_API_PUBLIC;

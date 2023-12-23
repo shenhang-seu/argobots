@@ -1,5 +1,18 @@
 # Argobots
 
+
+```
+cd argobots/
+./autogen.sh
+./configure --prefix=/home/s30733/argobots-install 2>&1 | tee c.txt
+make 2>&1 | tee m.txt
+make install 2>&1 | tee mi.txt
+
+gcc abt_test.c -I /home/s30733/argobots-install/include/ -L /home/s30733/argobots-install/lib -labt
+export LD_LIBRARY_PATH=/home/s30733/argobots-install/lib 
+```
+
+
 Argobots is a lightweight, low-level threading and tasking framework.
 
 README.md should contain enough information to get you started with Argobots.

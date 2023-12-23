@@ -152,6 +152,15 @@
         }                                                                      \
     } while (0)
 
+#define ABTI_CHECK_TRUE_ASSERT(cond, abt_errno)                                \
+    do {                                                                       \
+        if (ABTI_IS_ERROR_CHECK_ENABLED && ABTU_unlikely(!(cond))) {           \
+            int abt_errno_ = (abt_errno);                                      \
+            HANDLE_ERROR_FUNC_WITH_CODE(abt_errno_);                           \
+            assert(0);                                                         \
+        }                                                                      \
+    } while (0)
+
 #define ABTI_CHECK_YIELDABLE(p_thread, pp_ythread, abt_errno)                  \
     do {                                                                       \
         ABTI_thread *p_tmp = (p_thread);                                       \
@@ -331,6 +340,15 @@
             ABTU_unlikely(p == (ABTI_barrier *)NULL)) {                        \
             HANDLE_ERROR_FUNC_WITH_CODE(ABT_ERR_INV_BARRIER);                  \
             return ABT_ERR_INV_BARRIER;                                        \
+        }                                                                      \
+    } while (0)
+		
+#define ABTI_CHECK_NULL_SEM_PTR_ASSERT(p)                                             \
+    do {                                                                       \
+        if (ABTI_IS_ERROR_CHECK_ENABLED &&                                     \
+            ABTU_unlikely(p == (ABTI_sem *)NULL)) {                            \
+            HANDLE_ERROR_FUNC_WITH_CODE(ABT_ERR_INV_SEM);                      \
+            assert(0);                                                         \
         }                                                                      \
     } while (0)
 
