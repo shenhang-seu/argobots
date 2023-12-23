@@ -3,12 +3,14 @@
 
 ```
 cd argobots/
+chmod 777 ./autogen.sh
 ./autogen.sh
 ./configure --prefix=/home/s30733/argobots-install 2>&1 | tee c.txt
 make 2>&1 | tee m.txt
 make install 2>&1 | tee mi.txt
 
-gcc abt_test.c -I /home/s30733/argobots-install/include/ -L /home/s30733/argobots-install/lib -labt
+cd ABT_sem_demo
+gcc ABT_sem_demo_test.c -I /home/s30733/argobots-install/include/ -L /home/s30733/argobots-install/lib -labt
 export LD_LIBRARY_PATH=/home/s30733/argobots-install/lib 
 ```
 
