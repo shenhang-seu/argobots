@@ -10,7 +10,7 @@ make 2>&1 | tee m.txt
 make install 2>&1 | tee mi.txt
 
 cd ABT_sem_demo
-gcc ABT_sem_demo_test.c -I /home/s30733/argobots-install/include/ -L /home/s30733/argobots-install/lib -labt
+gcc -g ABT_sem_demo_test.c -I /home/s30733/argobots-install/include/ -L /home/s30733/argobots-install/lib -labt
 export LD_LIBRARY_PATH=/home/s30733/argobots-install/lib 
 ```
 
