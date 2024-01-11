@@ -112,6 +112,10 @@ enum ABTI_stack_guard {
 #define ABTI_THREAD_TYPE_MEM_MALLOC_DESC_MEMPOOL_LAZY_STACK                    \
     ((ABTI_thread_type)(0x1 << 12))
 
+/* 协程私有内存使用 */
+#define ABTI_PRIV_PAGE_SIZE 4096
+#define ABTI_PRIV_HEAD_SIZE (sizeof(struct ABTI_priv_page))
+
 #define ABTI_THREAD_TYPES_MEM                                                  \
     (ABTI_THREAD_TYPE_MEM_MEMPOOL_DESC | ABTI_THREAD_TYPE_MEM_MALLOC_DESC |    \
      ABTI_THREAD_TYPE_MEM_MEMPOOL_DESC_STACK |                                 \
@@ -420,6 +424,11 @@ struct ABTI_pool_config {
     ABTU_hashtable *p_table;
 };
 
+struct ABTI_priv_page {
+    struct ABTI_priv_page *next;
+    uint32_t page_idx; //当前4K可使用位置
+};
+
 struct ABTI_thread {
     ABTI_thread *p_prev;
     ABTI_thread *p_next;
@@ -435,6 +444,12 @@ struct ABTI_thread {
     ABTI_pool *p_pool;            /* Associated pool */
     ABTD_atomic_ptr p_keytable;   /* Thread-specific data (ABTI_ktable *) */
     ABT_unit_id id;               /* ID */
+
+    /* private mem */
+    uint32_t priv_page_size;                   /* 协程私有内存向系统申请内存的Page大小 */
+    uint32_t priv_page_num;                    /* 当前ULT 向系统申请的page数量 */
+    uint32_t priv_cur_page_idx;                /* 当前page 可使用的位置 */
+    struct ABTI_priv_page *priv_page_head;     /* 当前ULT所有向系统申请的page 链表 */
 };
 
 struct ABTI_thread_attr {
@@ -698,6 +713,8 @@ void ABTI_ktable_free(ABTI_global *p_global, ABTI_local *p_local,
 /* Information */
 void ABTI_info_print_config(ABTI_global *p_global, FILE *fp);
 void ABTI_info_check_print_all_thread_stacks(void);
+
+void ABTI_priv_mem_free(ABTI_thread *p_thread);
 
 #include "abti_timer.h"
 #include "abti_log.h"

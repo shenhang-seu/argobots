@@ -2914,6 +2914,15 @@ ythread_create(ABTI_global *p_global, ABTI_local *p_local, ABTI_pool *p_pool,
     p_newthread->thread.p_parent = NULL;
     p_newthread->thread.type |= thread_type;
     p_newthread->thread.id = ABTI_THREAD_INIT_ID;
+
+    /* 用于申请协程私有内存, 首次默认cur_page_idx已经没有可用空间 */
+    p_newthread->thread.priv_page_num = 0;
+    p_newthread->thread.priv_page_head = NULL;
+
+    p_newthread->thread.priv_page_size = ABTI_PRIV_PAGE_SIZE;
+    p_newthread->thread.priv_cur_page_idx = p_newthread->thread.priv_page_size;
+
+
     if (p_sched && !(thread_type & (ABTI_THREAD_TYPE_PRIMARY |
                                     ABTI_THREAD_TYPE_MAIN_SCHED))) {
         /* Set a destructor for p_sched. */
@@ -3043,6 +3052,10 @@ static inline void thread_free(ABTI_global *p_global, ABTI_local *p_local,
 
     /* Free the unit */
     if (free_unit) {
+        /* 协程任务结束后, 自动释放协程私有内存 */
+        /* 调度器释放时, stream->p_main_sched->p_ythread也会走到这里, 并不影响 */
+        ABTI_priv_mem_free(p_thread);
+
         ABTI_thread_unset_associated_pool(p_global, p_thread);
     }
 

@@ -2716,6 +2716,8 @@ int ABT_tool_register_thread_callback(ABT_tool_thread_callback_fn cb_func,
 int ABT_tool_query_thread(ABT_tool_context context, uint64_t event,
                           ABT_tool_query_kind query_kind, void *val) ABT_API_PUBLIC;
 
+void* ABT_priv_mem_request(uint32_t len) ABT_API_PUBLIC;
+
 #if defined(__cplusplus)
 }
 #endif

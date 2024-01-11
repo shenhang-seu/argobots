@@ -6,6 +6,7 @@ cd argobots/
 chmod 777 ./autogen.sh
 ./autogen.sh
 ./configure --prefix=/home/s30733/argobots-install 2>&1 | tee c.txt
+#./configure --enable-fast=O0 --enable-debug=most --prefix=/home/s30733/argobots-install 2>&1 | tee c.txt
 make 2>&1 | tee m.txt
 make install 2>&1 | tee mi.txt
 
