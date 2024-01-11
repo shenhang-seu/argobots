@@ -28,7 +28,7 @@ int main() {
     ABT_xstream xstream;
     ABT_xstream_create(ABT_SCHED_NULL, &xstream);
 
-    ABT_thread_create_on_xstream(xstream, my_abt_down, sem, ABT_THREAD_ATTR_NULL, NULL);
+    ABT_thread_create_on_xstream(xstream, my_abt_down, sem, ABT_THREAD_ATTR_NULL, NULL);//此时是ABTI_ythread_exit-->ABTI_ythread_callback_exit-->ABTI_thread_terminate-->ABTI_thread_free-->thread_free-->ABTI_priv_mem_free
     ABT_thread_create_on_xstream(xstream, my_abt_up, sem, ABT_THREAD_ATTR_NULL, NULL);
 
     // ABT_xstream_free() deallocates the resource used for the execution stream xstream and sets xstream to ABT_XSTREAM_NULL. If xstream is still running, this routine will be blocked on xstream until xstream terminates.
@@ -56,7 +56,7 @@ int main() {
 
     ABT_thread_join(thread1);
     ABT_thread_join(thread2);
-    ABT_thread_free(&thread1);
+    ABT_thread_free(&thread1);//此时是ABT_thread_free-->ABTI_thread_free-->thread_free-->ABTI_priv_mem_free
     ABT_thread_free(&thread2);
 
     // ABT_xstream_free() deallocates the resource used for the execution stream xstream and sets xstream to ABT_XSTREAM_NULL. If xstream is still running, this routine will be blocked on xstream until xstream terminates.
