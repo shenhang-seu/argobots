@@ -223,3 +223,20 @@ For Argobots developers who want to directly work on the primary version control
 system, there are a few additional steps involved (people using the release
 tarballs do not have to follow these steps).  Details about these steps can be
 found here: https://github.com/pmodels/argobots/wiki/Getting-and-Building
+
+
+## 7. 个人使用理解
+### 1.ABT_self_get_xstream
+ABT_self_get_xstream是 Argobots 库中的一个函数，用于获取当前执行流（execution stream, ES）的句柄。在 Argobots 中，执行流是一个轻量级的执行单元，类似于 POSIX 线程，但其设计更加灵活和高效，适用于大规模并行计算。
+底层实现原理主要包括以下几个方面：
+线程本地存储（TLS）：
+Argobots 利用线程本地存储来跟踪每个执行流的上下文。每个工作单元（如 ULT 或任务）在其执行时都关联到一个特定的执行流。
+当调用 ABT_self_get_xstream 时，函数通过 TLS 获取当前上下文中的执行流信息。
+
+轻量级调度：
+Argobots 的调度器负责管理工作单元在执行流中的调度。调度器会记录当前正在执行的工作单元以及其所属的执行流。
+ABT_self_get_xstream 通过查询调度器可以快速获取当前执行流的信息。
+高效的上下文切换：
+
+Argobots 设计的一个重点是提供比传统线程更快的上下文切换能力，这也有助于快速获取执行流的状态。
+通过优化的上下文切换机制，ABT_self_get_xstream 能够在很短的时间内返回结果，不会成为性能瓶颈。
