@@ -240,3 +240,13 @@ ABT_self_get_xstream 通过查询调度器可以快速获取当前xstream的信�
 
 Argobots 设计的一个重点是提供比传统线程更快的上下文切换能力，这也有助于快速获取执行流的状态。
 通过优化的上下文切换机制，ABT_self_get_xstream 能够在很短的时间内返回结果，不会成为性能瓶颈。
+
+ABT_self_get_xstream-->ABTI_SETUP_LOCAL_XSTREAM-->ABTI_local_get_xstream_or_null(ABTI_local_get_local());-->lp_ABTI_local，这是一个TLS变量，在线程上下文中为NULL，在协程上下文非NULL。
+ABTI_local_get_xstream_or_null 是 Argobots 库中的一个内部函数，它的主要作用是尝试获取当前线程的执行流（Execution Stream, ES），但在某些情况下可能会返回 NULL，这通常是在当前线程不在任何 Argobots 管理的执行流上下文中执行时。
+
+作用和用途
+获取当前执行流：
+该函数用于获取当前线程所关联的执行流对象。这在需要知道当前线程运行在哪个执行流上的情况下非常有用。
+
+返回 NULL 的场景：
+当线程不属于任何 Argobots 管理的执行流时，函数返回 NULL。这可能发生在非 Argobots 管理的线程（例如，主线程或其他外部创建的线程）调用 Argobots 函数时。
