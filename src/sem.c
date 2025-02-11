@@ -155,6 +155,9 @@ void ABT_sem_wait(ABT_sem sem)
                                       &p_sem->lock,
                                       ABT_SYNC_EVENT_TYPE_SEM,
                                       (void *)p_sem);
+        /* 加下面两句，是为了解决该bug： A和B在不同线程，A post，B 唤醒之后立刻free sem，可能会导致A的post流程还没走完就被释放了 */
+        ABTD_spinlock_acquire(&p_sem->lock);
+        ABTD_spinlock_release(&p_sem->lock);
     } else {
         ABTD_spinlock_release(&p_sem->lock);
     }
